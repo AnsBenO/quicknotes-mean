@@ -1,0 +1,96 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-500 to-blue-900 p-8">
+  <div
+    class="bg-white bg-opacity-50 rounded-lg p-8 max-w-4xl mx-auto text-center shadow-lg"
+  >
+    <div class="h-96 flex flex-col justify-center items-center">
+      <img
+        src="/logo-blue-notitle.png"
+        alt="Logo"
+        class="h-36 mx-auto mb-6 animate-bounce"
+      />
+      <h1 class="text-5xl font-extrabold text-gray-900 mb-4">
+        Welcome to {{ " " }}
+        <span class="font-logo text-blue-800">QUICKNOTES</span>
+      </h1>
+      <p class="text-gray-700 text-lg mb-8">
+        Your ultimate note-taking app. Organize your thoughts, ideas, and tasks
+        effortlessly.
+      </p>
+      @if(!(authService.isAuthenticated$ | async)){
+      <div class="flex justify-center space-x-4">
+        <a routerLink="/login">
+          <button
+            class="bg-blue-600 text-white py-2 px-6 rounded-full shadow-md hover:bg-blue-500 hover:scale-105 transition-all flex items-center space-x-2"
+          >
+            <fa-icon [icon]="signinIcon" />
+            <span>Login</span>
+          </button>
+        </a>
+        <a routerLink="/signup">
+          <button
+            class="bg-gray-700 text-white py-2 px-6 rounded-full shadow-md hover:bg-gray-600 hover:scale-105 transition-all flex items-center space-x-2"
+          >
+            <fa-icon [icon]="userIcon" />
+            <span>Sign Up</span>
+          </button>
+        </a>
+      </div>
+
+      }
+    </div>
+  </div>
+  <div class="mt-12 flex flex-wrap justify-around">
+    <div
+      class="bg-indigo-100 p-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 m-2 w-full md:w-5/12 transition-all"
+    >
+      <h2
+        class="text-2xl font-bold text-gray-700 mb-2 flex items-center space-x-2"
+      >
+        <fa-icon [icon]="stickyNoteIcon" />
+        <span>Create Notes</span>
+      </h2>
+      <p class="text-gray-600">
+        Easily create notes to keep track of your thoughts and tasks.
+      </p>
+    </div>
+    <div
+      class="bg-indigo-100 p-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 m-2 w-full md:w-5/12 transition-all"
+    >
+      <h2
+        class="text-2xl font-bold text-gray-700 mb-2 flex items-center space-x-2"
+      >
+        <fa-icon [icon]="tagsIcon" />
+        <span>Organize</span>
+      </h2>
+      <p class="text-gray-600">
+        Organize your notes by categories and tags for easy access.
+      </p>
+    </div>
+    <div
+      class="bg-indigo-100 p-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 m-2 w-full md:w-5/12 transition-all"
+    >
+      <h2
+        class="text-2xl font-bold text-gray-700 mb-2 flex items-center space-x-2"
+      >
+        <fa-icon [icon]="syncIcon" />
+        <span>Sync</span>
+      </h2>
+      <p class="text-gray-600">
+        Sync your notes across all your devices effortlessly.
+      </p>
+    </div>
+    <div
+      class="bg-indigo-100 p-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 m-2 w-full md:w-5/12 transition-all"
+    >
+      <h2
+        class="text-2xl font-bold text-gray-700 mb-2 flex items-center space-x-2"
+      >
+        <fa-icon [icon]="shareIcon" />
+        <span>Share</span>
+      </h2>
+      <p class="text-gray-600">
+        Share your notes with others and collaborate in real-time.
+      </p>
+    </div>
+  </div>
+</div>

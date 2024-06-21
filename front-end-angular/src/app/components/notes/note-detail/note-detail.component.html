@@ -1,0 +1,49 @@
+<div class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-8 relative">
+  <h2 class="text-3xl font-extrabold mb-1 text-blue-900">
+    {{ note()?.title }}
+  </h2>
+  <p class="text-gray-500 mt-1 text-sm mb-4">
+    {{ note()?.createdAt | date : "short" }}
+  </p>
+  <div class="">
+    @if(isEditing()){
+    <textarea
+      [(ngModel)]="editedNote"
+      name="editedNote"
+      (keydown)="handleKeyDown($event)"
+      class="text-gray-700 text-lg break-words whitespace-pre-wrap p-4 border w-full"
+    ></textarea>
+
+    }@else{
+    <p class="text-gray-700 text-lg break-words whitespace-pre-wrap p-4 border">
+      {{ note()?.text }}
+    </p>
+
+    }
+  </div>
+  @if (isEditing()) {
+  <div class="mt-2 text-gray-500 text-sm">
+    Press Enter to save or Esc to discard changes
+  </div>
+  }
+  <div class="mt-6 flex justify-between items-center">
+    <a
+      class="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-700 hover:scale-105 transition-all"
+      routerLink="/notes"
+    >
+      Back to Notes
+    </a>
+    <div class="flex gap-3">
+      <fa-icon
+        [icon]="penIcon"
+        class="text-gray-400 hover:text-gray-700 cursor-pointer transition-all"
+        (click)="handleEditClick()"
+      />
+      <fa-icon
+        [icon]="trashIcon"
+        class="text-gray-400 hover:text-gray-700 cursor-pointer transition-all"
+        (click)="handleRemoveClick(note()?._id)"
+      />
+    </div>
+  </div>
+</div>

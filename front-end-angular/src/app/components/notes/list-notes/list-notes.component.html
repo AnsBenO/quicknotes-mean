@@ -1,0 +1,41 @@
+<div class="max-w-3xl mx-auto p-6 mt-8 bg-gray-100 rounded-lg shadow-xl">
+  <h2 class="text-4xl font-extrabold text-center mb-6 text-blue-900">
+    My Notes
+  </h2>
+  <a
+    routerLink="/notes/new"
+    class="block text-center bg-blue-700 text-white px-4 py-3 rounded-lg hover:bg-blue-600 hover:scale-105 transition-all mb-6 inline-flex items-center justify-center space-x-2"
+  >
+    <fa-icon [icon]="plusIcon"></fa-icon>
+    <span>Create Note</span>
+  </a>
+  <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    @for (note of notes(); track $index) {
+    <li
+      class="bg-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105 relative"
+    >
+      <a
+        [routerLink]="['/notes', note._id]"
+        class="block text-2xl font-bold text-blue-900 hover:text-blue-600 transition-colors"
+      >
+        {{ note.title }}
+      </a>
+      <p class="text-gray-700 mt-2 truncate">
+        {{ note.text.slice(0, 100) }}...
+      </p>
+      <p class="text-gray-500 mt-1 text-sm">
+        {{ note.createdAt | date : "short" }}
+      </p>
+
+      <fa-icon
+        [icon]="deleteIcon"
+        class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 cursor-pointer"
+        (click)="handleRemoveClick(note._id)"
+        tabindex="0"
+        (keydown)="handleKeydown($event, note._id)"
+      ></fa-icon>
+    </li>
+
+    }
+  </ul>
+</div>

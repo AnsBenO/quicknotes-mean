@@ -1,0 +1,163 @@
+<nav class="bg-gray-800 shadow p-2">
+  <div class="flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <a routerLink="/home">
+        <img src="/logo-white-notitle.png" alt="Logo" class="h-10 w-10" />
+      </a>
+      <a
+        [ngClass]="{ hidden: isNavOpen, block: !isNavOpen }"
+        class="home text-white"
+        routerLink="/home"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Home</a
+      >
+    </div>
+
+    <div class="lg:hidden">
+      <button (click)="toggleNav()" class="nav-button" id="nav_button">
+        <fa-icon [icon]="threeBarsIcon" />
+      </button>
+    </div>
+
+    <div class="hidden lg:flex items-center gap-2">
+      <!-- ? Authenticated Links -->
+      @if(authService.isAuthenticated$ | async){
+
+      <ul class="flex gap-2">
+        <li>
+          <a
+            class="text-white"
+            routerLink="/notes"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            >Notes</a
+          >
+        </li>
+        <li>
+          <a
+            class="text-white"
+            routerLink="/notes/new"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            >Create Note</a
+          >
+        </li>
+      </ul>
+      <div class="buttons flex flex-col space-y-2 ml-auto">
+        <button (click)="handleLogout()" class="text-white">Logout</button>
+      </div>
+
+      }
+
+      <!-- ? Guest Links -->
+      @if(!(authService.isAuthenticated$ | async)){
+
+      <div class="buttons ml-auto flex space-x-4">
+        <a
+          class="text-white"
+          routerLink="/login"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          >Login</a
+        >
+        <a
+          class="text-white"
+          routerLink="/signup"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          >Sign Up</a
+        >
+      </div>
+      }
+    </div>
+  </div>
+
+  <!-- ? Sidebar for Mobile -->
+  <div
+    class="fixed inset-0 z-50 lg:hidden bg-gray-800 bg-opacity-75 transform transition-transform"
+    [ngClass]="{ 'translate-x-full': !isNavOpen, 'translate-x-0': isNavOpen }"
+  >
+    <div class="w-64 h-full bg-gray-900 p-3 pb-14 ml-auto" id="sidebar">
+      <div class="flex flex-col">
+        <button
+          (click)="toggleNav()"
+          class="text-white focus:outline-none self-end px-3 py-1 text-lg font-medium rounded-lg hover:bg-slate-800"
+          id="nav_button"
+        >
+          <fa-icon [icon]="xMarkIcon" />
+        </button>
+      </div>
+      <div class="flex flex-col justify-between h-full">
+        @if(authService.isAuthenticated$ | async){
+        <ul class="flex flex-col space-y-2 mt-5">
+          <li>
+            <a
+              class="w-full block text-white"
+              routerLink="/home"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >Home</a
+            >
+          </li>
+          <li>
+            <a
+              class="w-full block"
+              routerLink="/notes"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >Notes</a
+            >
+          </li>
+          <li>
+            <a
+              class="w-full block"
+              routerLink="/notes/new"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >Create Note</a
+            >
+          </li>
+        </ul>
+
+        <div class="buttons flex flex-col space-y-2">
+          <!-- ? horizontal bar to separate buttons from links  -->
+          <div class="border border-slate-600 mb-3"></div>
+          <button (click)="handleLogout()" class="text-white">Logout</button>
+        </div>
+        } @if(!(authService.isAuthenticated$ | async)){
+        <ul class="flex flex-col space-y-2 mt-5">
+          <li class="">
+            <a
+              class="w-full block text-white"
+              routerLink="/home"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >Home</a
+            >
+          </li>
+        </ul>
+        <div class="buttons flex flex-col space-y-2 h-full justify-end">
+          <!-- ? horizontal bar to separate buttons from links  -->
+          <div class="border border-slate-600 mb-3"></div>
+
+          <a
+            class="text-white"
+            routerLink="/login"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            >Login</a
+          >
+          <a
+            class="text-white"
+            routerLink="/signup"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            >Sign Up</a
+          >
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</nav>

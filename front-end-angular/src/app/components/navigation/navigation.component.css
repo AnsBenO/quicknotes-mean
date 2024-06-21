@@ -1,0 +1,27 @@
+li a:not(.is-active),
+.home {
+  @apply text-gray-200 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 border-transparent border-2 border-solid;
+}
+
+.is-active:not(.buttons) {
+  @apply text-white px-4 py-2 rounded-2xl text-sm font-medium bg-gradient-to-r from-blue-400 to-indigo-400 border-transparent border-2 border-solid;
+}
+
+.is-active .buttons {
+  @apply hidden;
+}
+
+.buttons a:not(.is-active),
+.buttons button:not(.is-active) {
+  @apply px-4 py-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-2xl border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700;
+}
+.nav-button {
+  @apply px-3 py-1 text-lg font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700;
+}
+.sidebar {
+  @apply fixed inset-0 z-50 lg:hidden bg-gray-800 bg-opacity-75 transform transition-transform;
+}
+
+.sidebar-content {
+  @apply w-64 h-full bg-gray-900 p-4 ml-auto;
+}

@@ -1,0 +1,38 @@
+.loader {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  border: 10px solid;
+  box-sizing: border-box;
+  animation: animate-loader 0.5s linear infinite;
+}
+
+@keyframes animate-loader {
+  0% {
+    border-color: #0564ca rgba(0, 123, 255, 0) rgba(0, 123, 255, 0)
+      rgba(0, 123, 255, 0); /* Light blue */
+  }
+  33% {
+    border-color: #004998 #0056b3 rgba(0, 123, 255, 0) rgba(0, 123, 255, 0); /* Medium blue */
+  }
+  66% {
+    border-color: #004998 #0056b3 #003d80 rgba(0, 123, 255, 0); /* Darker blue */
+  }
+  100% {
+    border-color: #004998 #0056b3 #003d80 #00264d; /* Darkest blue */
+  }
+}
+
+.loader-container {
+  display: flex;
+  z-index: 100;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(255, 255, 255, 0.301);
+  backdrop-filter: blur(10px);
+}

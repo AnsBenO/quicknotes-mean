@@ -1,0 +1,67 @@
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+  <form
+    (submit)="handleSubmit()"
+    [formGroup]="noteForm"
+    class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg"
+  >
+    <div
+      class="flex justify-center items-center gap-3 text-2xl font-bold mb-6 text-blue-900"
+    >
+      <fa-icon [icon]="plusIcon" class="text-blue-900" />
+      <h2>Create Note</h2>
+    </div>
+    <div class="mb-4">
+      <label class="block text-gray-700 mb-2 font-medium">Title</label>
+      <div class="relative">
+        <fa-icon
+          [icon]="headingIcon"
+          class="absolute top-1/2 transform -translate-y-1/2 left-3 text-gray-400"
+        />
+        <input
+          type="text"
+          name="title"
+          formControlName="title"
+          trimInput
+          class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200 focus:border-blue-500"
+        />
+      </div>
+      @if(isInvalidInput('title')){ @if
+      (noteForm.get('title')?.hasError('required')) {
+      <span class="text-red-500 text-xs mt-1">Title is required</span>
+      } @if (noteForm.get('title')?.errors?.['minlength']) {
+      <span class="text-red-500 text-xs mt-1">
+        Title must be at least 3 characters long
+      </span>
+      }}
+    </div>
+    <div class="mb-6">
+      <label class="block text-gray-700 mb-2 font-medium">Text</label>
+      <div class="relative">
+        <fa-icon
+          [icon]="stickyNoteIcon"
+          class="absolute top-1/2 transform -translate-y-1/2 left-3 text-gray-400"
+        />
+        <textarea
+          name="text"
+          formControlName="text"
+          class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200 focus:border-blue-500"
+        ></textarea>
+      </div>
+      @if(isInvalidInput('text')){ @if
+      (noteForm.get('text')?.hasError('required')) {
+      <span class="text-red-500 text-xs mt-1">Note content is required</span>
+      } @if (noteForm.get('text')?.errors?.['minlength']) {
+      <span class="text-red-500 text-xs mt-1">
+        Note content must be at least 6 characters long
+      </span>
+      }}
+    </div>
+    <button
+      type="submit"
+      [disabled]="noteForm.invalid"
+      class="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-500 hover:scale-105 transition-all focus:outline-none focus:ring-2 focus:ring-blue-200"
+    >
+      Create Note
+    </button>
+  </form>
+</div>
