@@ -6,41 +6,45 @@ import dotenv from "dotenv";
 import { AuthenticatedRequest } from "../middleware/auth";
 dotenv.config();
 
-export const getNotes: RequestHandler = async (
+export const getNotes: RequestHandler = (
 	req: AuthenticatedRequest,
 	res: Response,
 	next: NextFunction
 ) => {
-	try {
-		const notes = await NoteModel.find({ userId: req.userId });
-		res.status(200).json(notes);
-	} catch (error) {
-		next(error);
-	}
+	(async () => {
+		try {
+			const notes = await NoteModel.find({ userId: req.userId });
+			res.status(200).json(notes);
+		} catch (error) {
+			next(error);
+		}
+	})();
 };
 
-export const getNote: RequestHandler = async (
+export const getNote: RequestHandler = (
 	req: AuthenticatedRequest,
 	res: Response,
 	next: NextFunction
 ) => {
-	const noteId = req.params.noteId;
+	(async () => {
+		const noteId = req.params.noteId;
 
-	try {
-		const note = await NoteModel.findById(noteId);
+		try {
+			const note = await NoteModel.findById(noteId);
 
-		if (!note) {
-			throw createHttpError(404, "Note not found");
+			if (!note) {
+				throw createHttpError(404, "Note not found");
+			}
+
+			if (!note.userId.equals(req.userId)) {
+				throw createHttpError(401, "You cannot access this note");
+			}
+
+			res.status(200).json(note);
+		} catch (error) {
+			next(error);
 		}
-
-		if (!note.userId.equals(req.userId)) {
-			throw createHttpError(401, "You cannot access this note");
-		}
-
-		res.status(200).json(note);
-	} catch (error) {
-		next(error);
-	}
+	})();
 };
 
 interface CreateNoteBody {
@@ -110,28 +114,30 @@ export const updateNote = async (
 	}
 };
 
-export const deleteNote: RequestHandler = async (
+export const deleteNote: RequestHandler = (
 	req: AuthenticatedRequest,
 	res: Response,
 	next: NextFunction
 ) => {
-	const noteId = req.params.noteId;
+	(async () => {
+		const noteId = req.params.noteId;
 
-	try {
-		const note = await NoteModel.findById(noteId);
+		try {
+			const note = await NoteModel.findById(noteId);
 
-		if (!note) {
-			throw createHttpError(404, "Note not found");
+			if (!note) {
+				throw createHttpError(404, "Note not found");
+			}
+
+			if (!note.userId.equals(req.userId)) {
+				throw createHttpError(401, "You cannot access this note");
+			}
+
+			await NoteModel.deleteOne({ _id: noteId });
+
+			res.sendStatus(204);
+		} catch (error) {
+			next(error);
 		}
-
-		if (!note.userId.equals(req.userId)) {
-			throw createHttpError(401, "You cannot access this note");
-		}
-
-		await NoteModel.deleteOne({ _id: noteId });
-
-		res.sendStatus(204);
-	} catch (error) {
-		next(error);
-	}
+	})();
 };
