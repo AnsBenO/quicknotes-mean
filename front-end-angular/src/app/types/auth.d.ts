@@ -7,7 +7,7 @@ export interface TUser {
 }
 export interface LoginResponse {
   user: TUser;
-  token: string;
+  authToken: string;
   refreshToken: string;
 }
 export interface LogoutResponse {

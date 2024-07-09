@@ -1,8 +1,9 @@
 import createHttpError from "http-errors";
 import bcrypt from "bcrypt";
 import UserModel from "../models/User";
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+
 import { NextFunction, Request, Response } from "express";
 import { AuthenticatedRequest } from "../middleware/auth";
 dotenv.config();
@@ -76,13 +77,13 @@ export const signUp = async (
 			email: email,
 			password: passwordHashed,
 		});
-		const token = jwt.sign({ userId: newUser._id }, SECRET, {
+		const authToken = jwt.sign({ userId: newUser._id }, SECRET, {
 			expiresIn: "15m",
 		});
 		const refreshToken = jwt.sign({ userId: newUser._id }, REFRESH_SECRET, {
 			expiresIn: "7d",
 		});
-		res.status(201).json({ user: newUser, token, refreshToken });
+		res.status(201).json({ user: newUser, authToken, refreshToken });
 	} catch (error) {
 		next(error);
 	}
@@ -120,13 +121,13 @@ export const login = async (
 			throw createHttpError(401, "Invalid credentials");
 		}
 
-		const token = jwt.sign({ userId: user._id }, SECRET, {
+		const authToken = jwt.sign({ userId: user._id }, SECRET, {
 			expiresIn: "15m",
 		});
 		const refreshToken = jwt.sign({ userId: user._id }, REFRESH_SECRET, {
 			expiresIn: "7d",
 		});
-		res.status(200).json({ user, token, refreshToken });
+		res.status(200).json({ user, authToken, refreshToken });
 	} catch (error) {
 		next(error);
 	}
@@ -136,19 +137,21 @@ export const refreshToken = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const { token } = req.body;
+	const { authToken } = req.body;
 
 	try {
-		if (!token) {
-			throw createHttpError(400, "Refresh token required");
+		if (!authToken) {
+			throw createHttpError(400, "Refresh authToken required");
 		}
-		const decoded = jwt.verify(token, REFRESH_SECRET) as { userId: string };
+		const decoded = jwt.verify(authToken, REFRESH_SECRET) as {
+			userId: string;
+		};
 		const newAccessToken = jwt.sign({ userId: decoded.userId }, SECRET, {
 			expiresIn: "15m",
 		});
-		console.info("[new token] --> ", newAccessToken);
+		console.info("[new authToken] --> ", newAccessToken);
 
-		res.status(200).json({ token: newAccessToken });
+		res.status(200).json({ authToken: newAccessToken });
 	} catch (error) {
 		next(error);
 	}

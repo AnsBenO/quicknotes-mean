@@ -4,7 +4,7 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, Observable, switchMap, throwError } from 'rxjs';
+import { catchError, Observable, switchMap, take, throwError } from 'rxjs';
 import { TNote } from '../types/note';
 import { AuthService } from './auth.service';
 
@@ -15,28 +15,34 @@ export class NoteService {
   API_URL = 'http://localhost:3003/api/notes';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
-  private createAuthHeaders(token: string): HttpHeaders {
+  private createAuthHeaders(authToken: string): HttpHeaders {
     return new HttpHeaders({
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${authToken}`,
     });
   }
 
   getNotes(): Observable<TNote[]> {
-    const headers = this.createAuthHeaders(this.authService.token() as string);
+    const headers = this.createAuthHeaders(
+      this.authService.authToken() as string
+    );
     return this.http
       .get<TNote[]>(this.API_URL, { headers })
       .pipe(catchError((err) => this.handleAuthError(err, this.getNotes())));
   }
 
   getNote(id: string): Observable<TNote> {
-    const headers = this.createAuthHeaders(this.authService.token() as string);
+    const headers = this.createAuthHeaders(
+      this.authService.authToken() as string
+    );
     return this.http
       .get<TNote>(`${this.API_URL}/${id}`, { headers })
       .pipe(catchError((err) => this.handleAuthError(err, this.getNote(id))));
   }
 
   createNote(note: { title: string; text: string }): Observable<TNote> {
-    const headers = this.createAuthHeaders(this.authService.token() as string);
+    const headers = this.createAuthHeaders(
+      this.authService.authToken() as string
+    );
     return this.http
       .post<TNote>(this.API_URL, note, { headers })
       .pipe(
@@ -48,7 +54,9 @@ export class NoteService {
     id: string,
     note: { title: string; text: string }
   ): Observable<TNote> {
-    const headers = this.createAuthHeaders(this.authService.token() as string);
+    const headers = this.createAuthHeaders(
+      this.authService.authToken() as string
+    );
     return this.http
       .patch<TNote>(`${this.API_URL}/${id}`, note, { headers })
       .pipe(
@@ -59,7 +67,9 @@ export class NoteService {
   }
 
   deleteNote(id: string): Observable<void> {
-    const headers = this.createAuthHeaders(this.authService.token() as string);
+    const headers = this.createAuthHeaders(
+      this.authService.authToken() as string
+    );
     return this.http
       .delete<void>(`${this.API_URL}/${id}`, {
         headers,
@@ -76,11 +86,11 @@ export class NoteService {
     if (err.status === 401) {
       return this.authService.refreshToken().pipe(
         switchMap(() => {
-          this.authService.token() as string;
+          this.authService.authToken() as string;
           return originalRequest;
         }),
         catchError((error) => {
-          this.authService.logoutUser().subscribe();
+          this.authService.logoutUser().pipe(take(1)).subscribe();
           return throwError(() => error);
         })
       );

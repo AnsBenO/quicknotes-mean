@@ -22,8 +22,8 @@ export const authenticateToken: RequestHandler = (
 		return next(createHttpError(401, "Authorization header not provided"));
 	}
 
-	const token = authHeader.split(" ")[1];
-	if (!token) {
+	const authToken = authHeader.split(" ")[1];
+	if (!authToken) {
 		return next(createHttpError(401, "Token not provided"));
 	}
 
@@ -32,7 +32,7 @@ export const authenticateToken: RequestHandler = (
 	}
 
 	try {
-		const decoded = jwt.verify(token, secret) as {
+		const decoded = jwt.verify(authToken, secret) as {
 			userId: string;
 		};
 		req.userId = decoded.userId;
@@ -42,6 +42,6 @@ export const authenticateToken: RequestHandler = (
 			return next(createHttpError(401, "Token expired"));
 		}
 		console.error("Token verification failed:", error);
-		next(createHttpError(401, "Invalid token"));
+		next(createHttpError(401, "Invalid authToken"));
 	}
 };

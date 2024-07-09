@@ -15,13 +15,13 @@ export class AuthService {
   );
   public isAuthenticated$ = this.loggedIn.asObservable();
   private refreshTokenTimeout!: ReturnType<typeof setTimeout>;
-  token: WritableSignal<string | null> = signal<string | null>(null);
+  authToken: WritableSignal<string | null> = signal<string | null>(null);
 
   constructor(private http: HttpClient) {
-    const token = localStorage.getItem('authToken');
-    if (token) {
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
       this.loggedIn.next(true);
-      this.token.set(token);
+      this.authToken.set(authToken);
       this.startRefreshTokenTimer();
     }
   }
@@ -31,32 +31,32 @@ export class AuthService {
       .post<LoginResponse>(`${API_URL}/login`, { username, password })
       .pipe(
         tap((response) => {
-          if (response.token && response.refreshToken) {
-            localStorage.setItem('authToken', response.token);
+          if (response.authToken && response.refreshToken) {
+            localStorage.setItem('authToken', response.authToken);
             localStorage.setItem('refreshToken', response.refreshToken);
             this.loggedIn.next(true);
-            this.token.set(response.token);
+            this.authToken.set(response.authToken);
             this.startRefreshTokenTimer();
           }
         })
       );
   }
 
-  refreshToken(): Observable<{ token: string }> {
+  refreshToken(): Observable<{ authToken: string }> {
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) {
-      return throwError(() => new Error('No refresh token found'));
+      return throwError(() => new Error('No refresh authToken found'));
     }
 
     return this.http
-      .post<{ token: string }>(`${API_URL}/refresh-token`, {
-        token: refreshToken,
+      .post<{ authToken: string }>(`${API_URL}/refresh-authToken`, {
+        authToken: refreshToken,
       })
       .pipe(
         tap((response) => {
-          if (response.token) {
-            localStorage.setItem('authToken', response.token);
-            this.token.set(response.token);
+          if (response.authToken) {
+            localStorage.setItem('authToken', response.authToken);
+            this.authToken.set(response.authToken);
             this.startRefreshTokenTimer();
           } else {
             throw new Error('Invalid response');
@@ -71,15 +71,17 @@ export class AuthService {
   }
 
   private startRefreshTokenTimer() {
-    type JwtToken = {
-      exp: number;
-      iat: number;
-      userId: string;
+    type AuthTokenPayload = {
+      exp: number; // Expiration time in Unix timestamp format
+      iat: number; // Issued at time in Unix timestamp format
+      userId: string; // User ID
     };
-    const token = localStorage.getItem('authToken');
-    if (!token) return;
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) return;
 
-    const jwtToken = JSON.parse(atob(token.split('.')[1])) as JwtToken;
+    const jwtToken = JSON.parse(
+      atob(authToken.split('.')[1])
+    ) as AuthTokenPayload;
     const expires = new Date(jwtToken.exp * 1000);
 
     const timeout = expires.getTime() - Date.now() - 60 * 1000;
@@ -111,7 +113,7 @@ export class AuthService {
         next: () => {
           localStorage.removeItem('authToken');
           localStorage.removeItem('refreshToken');
-          this.token.set(null);
+          this.authToken.set(null);
           this.loggedIn.next(false);
           this.stopRefreshTokenTimer();
         },
