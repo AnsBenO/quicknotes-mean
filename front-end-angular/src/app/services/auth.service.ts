@@ -15,13 +15,12 @@ export class AuthService {
   );
   public isAuthenticated$ = this.loggedIn.asObservable();
   private refreshTokenTimeout!: ReturnType<typeof setTimeout>;
-  authToken: WritableSignal<string | null> = signal<string | null>(null);
 
   constructor(private http: HttpClient) {
     const authToken = localStorage.getItem('authToken');
     if (authToken) {
       this.loggedIn.next(true);
-      this.authToken.set(authToken);
+
       this.startRefreshTokenTimer();
     }
   }
@@ -35,7 +34,6 @@ export class AuthService {
             localStorage.setItem('authToken', response.authToken);
             localStorage.setItem('refreshToken', response.refreshToken);
             this.loggedIn.next(true);
-            this.authToken.set(response.authToken);
             this.startRefreshTokenTimer();
           }
         })
@@ -56,7 +54,6 @@ export class AuthService {
         tap((response) => {
           if (response.authToken) {
             localStorage.setItem('authToken', response.authToken);
-            this.authToken.set(response.authToken);
             this.startRefreshTokenTimer();
           } else {
             throw new Error('Invalid response');
@@ -72,8 +69,8 @@ export class AuthService {
 
   private startRefreshTokenTimer() {
     type AuthTokenPayload = {
-      exp: number; // Expiration time in Unix timestamp format
-      iat: number; // Issued at time in Unix timestamp format
+      exp: number; // Expiration time
+      iat: number; // Issued at time
       userId: string; // User ID
     };
     const authToken = localStorage.getItem('authToken');
@@ -113,7 +110,6 @@ export class AuthService {
         next: () => {
           localStorage.removeItem('authToken');
           localStorage.removeItem('refreshToken');
-          this.authToken.set(null);
           this.loggedIn.next(false);
           this.stopRefreshTokenTimer();
         },

@@ -122,7 +122,7 @@ export const login = async (
 		}
 
 		const authToken = jwt.sign({ userId: user._id }, SECRET, {
-			expiresIn: "15m",
+			expiresIn: "3m",
 		});
 		const refreshToken = jwt.sign({ userId: user._id }, REFRESH_SECRET, {
 			expiresIn: "7d",
