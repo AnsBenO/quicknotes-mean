@@ -49,7 +49,7 @@ export class AuthService {
     }
 
     return this.http
-      .post<{ authToken: string }>(`${API_URL}/refresh-authToken`, {
+      .post<{ authToken: string }>(`${API_URL}/refresh-token`, {
         authToken: refreshToken,
       })
       .pipe(
