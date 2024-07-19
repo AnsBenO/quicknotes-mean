@@ -19,3 +19,8 @@ export interface SignupResponse {
   token: string;
   refreshToken: string;
 }
+export interface AuthTokenPayload {
+  exp: number; // Expiration time
+  iat: number; // Issued at time
+  userId: string; // User ID
+}

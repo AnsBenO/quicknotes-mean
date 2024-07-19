@@ -2,7 +2,7 @@
 import express from "express";
 import {
 	getAuthenticatedUser,
-	refreshToken,
+	refreshAuthToken,
 	signUp,
 	login,
 	logout,
@@ -12,7 +12,7 @@ import { authenticateToken } from "../middleware/auth";
 const router = express.Router();
 
 router.get("/profile", authenticateToken, getAuthenticatedUser);
-router.post("/refresh-token", refreshToken);
+router.post("/refresh-token", refreshAuthToken);
 router.post("/signup", signUp);
 router.post("/login", login);
 router.post("/logout", logout);

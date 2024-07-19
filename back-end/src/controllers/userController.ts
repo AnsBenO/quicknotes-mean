@@ -122,7 +122,7 @@ export const login = async (
 		}
 
 		const authToken = jwt.sign({ userId: user._id }, SECRET, {
-			expiresIn: "3m",
+			expiresIn: "15m",
 		});
 		const refreshToken = jwt.sign({ userId: user._id }, REFRESH_SECRET, {
 			expiresIn: "7d",
@@ -132,18 +132,18 @@ export const login = async (
 		next(error);
 	}
 };
-export const refreshToken = async (
+export const refreshAuthToken = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
-	const { authToken } = req.body;
+	const { refreshToken } = req.body;
 
 	try {
-		if (!authToken) {
-			throw createHttpError(400, "Refresh authToken required");
+		if (!refreshToken) {
+			throw createHttpError(400, "Refresh Token required");
 		}
-		const decoded = jwt.verify(authToken, REFRESH_SECRET) as {
+		const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as {
 			userId: string;
 		};
 		const newAccessToken = jwt.sign({ userId: decoded.userId }, SECRET, {

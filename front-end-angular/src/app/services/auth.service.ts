@@ -1,8 +1,13 @@
-import { Injectable, signal, WritableSignal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, take, tap } from 'rxjs/operators';
-import { LoginResponse, LogoutResponse, SignupResponse } from '../types/auth';
+import {
+  AuthTokenPayload,
+  LoginResponse,
+  LogoutResponse,
+  SignupResponse,
+} from '../types/auth';
 
 const API_URL = 'http://localhost:3003/api/users';
 
@@ -43,12 +48,13 @@ export class AuthService {
   refreshToken(): Observable<{ authToken: string }> {
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) {
+      this.logoutUser().pipe(take(1)).subscribe();
       return throwError(() => new Error('No refresh authToken found'));
     }
 
     return this.http
       .post<{ authToken: string }>(`${API_URL}/refresh-token`, {
-        authToken: refreshToken,
+        refreshToken: refreshToken,
       })
       .pipe(
         tap((response) => {
@@ -68,24 +74,30 @@ export class AuthService {
   }
 
   private startRefreshTokenTimer() {
-    type AuthTokenPayload = {
-      exp: number; // Expiration time
-      iat: number; // Issued at time
-      userId: string; // User ID
-    };
     const authToken = localStorage.getItem('authToken');
     if (!authToken) return;
+    try {
+      const jwtToken = JSON.parse(
+        atob(authToken.split('.')[1])
+      ) as AuthTokenPayload;
+      const expires = new Date(jwtToken.exp * 1000);
+      const timeout = expires.getTime() - Date.now() - 60 * 1000;
 
-    const jwtToken = JSON.parse(
-      atob(authToken.split('.')[1])
-    ) as AuthTokenPayload;
-    const expires = new Date(jwtToken.exp * 1000);
-
-    const timeout = expires.getTime() - Date.now() - 60 * 1000;
-    this.refreshTokenTimeout = setTimeout(
-      () => this.refreshToken().pipe(take(1)).subscribe(),
-      timeout
-    );
+      if (timeout < 180000) {
+        // Refresh the token if it is near expiration
+        this.refreshToken().pipe(take(1)).subscribe();
+      } else {
+        // If token is valid, set the user as logged in
+        this.loggedIn.next(true);
+        this.refreshTokenTimeout = setTimeout(
+          () => this.refreshToken().pipe(take(1)).subscribe(),
+          timeout - 180000
+        );
+      }
+    } catch (error) {
+      console.error('Failed to parse JWT:', error);
+      this.logoutUser().pipe(take(1)).subscribe();
+    }
   }
 
   private stopRefreshTokenTimer() {
