@@ -21,7 +21,7 @@ import {
   faStickyNote,
 } from '@fortawesome/free-solid-svg-icons';
 import { NoteService } from '../../../services/note.service';
-import { catchError, take, tap, throwError } from 'rxjs';
+import { take, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-note-create-form',

@@ -10,13 +10,14 @@ import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   WritableSignal,
   signal,
 } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AuthService } from '../../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
-import { take } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ErrorResponse } from '../../../types/errorResponse';
 
 @Component({
@@ -42,7 +43,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private destroyRef: DestroyRef
   ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
@@ -55,7 +57,7 @@ export class LoginComponent {
       this.errorMessage.set(null);
       this.authService
         .loginUser(this.loginForm.value.username, this.loginForm.value.password)
-        .pipe(take(1))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.router.navigate(['/notes']);

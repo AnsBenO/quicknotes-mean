@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   HostListener,
   OnInit,
   WritableSignal,
@@ -22,6 +23,7 @@ import { take } from 'rxjs';
 import { ErrorResponse } from '../../../types/errorResponse';
 import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-signup',
@@ -49,7 +51,8 @@ export class SignupComponent implements OnInit {
   constructor(
     fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private destroyRef: DestroyRef
   ) {
     this.signupForm = fb.group(
       {
@@ -90,7 +93,7 @@ export class SignupComponent implements OnInit {
           this.signupForm.value.email,
           this.signupForm.value.password
         )
-        .pipe(take(1))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.router.navigate(['/login']);

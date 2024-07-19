@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  OnDestroy,
+  DestroyRef,
   OnInit,
   WritableSignal,
   signal,
@@ -10,10 +10,11 @@ import {
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TNote } from '../../../types/note';
 import { NoteService } from '../../../services/note.service';
-import { Subject, take, takeUntil } from 'rxjs';
+import { take } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-note-detail',
@@ -22,9 +23,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   templateUrl: './note-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NoteDetailComponent implements OnInit, OnDestroy {
+export class NoteDetailComponent implements OnInit {
   id!: string;
-  destroy$: Subject<void> = new Subject<void>();
   note: WritableSignal<TNote | null> = signal<TNote | null>(null);
   isEditing: WritableSignal<boolean> = signal<boolean>(false);
   penIcon = faPen;
@@ -33,7 +33,8 @@ export class NoteDetailComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private noteService: NoteService
+    private noteService: NoteService,
+    private destroyRef: DestroyRef
   ) {}
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -47,7 +48,8 @@ export class NoteDetailComponent implements OnInit, OnDestroy {
   private getNote(noteId: string) {
     this.noteService
       .getNote(noteId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+
       .subscribe((n) => {
         this.note.set(n);
         this.editedNote = n.text;
@@ -84,10 +86,5 @@ export class NoteDetailComponent implements OnInit, OnDestroy {
         .pipe(take(1))
         .subscribe(() => this.router.navigate(['/notes']));
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  OnDestroy,
+  DestroyRef,
   OnInit,
   WritableSignal,
   signal,
@@ -13,6 +13,7 @@ import { TNote } from '../../../types/note';
 import { RouterModule } from '@angular/router';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-list-notes',
@@ -26,7 +27,10 @@ export class ListNotesComponent implements OnInit {
   plusIcon = faPlus;
   deleteIcon = faTrash;
 
-  constructor(private noteService: NoteService) {}
+  constructor(
+    private noteService: NoteService,
+    private destroyRef: DestroyRef
+  ) {}
   ngOnInit(): void {
     this.getNotes();
   }
@@ -34,7 +38,8 @@ export class ListNotesComponent implements OnInit {
   private getNotes() {
     this.noteService
       .getNotes()
-      .pipe(take(1))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+
       .subscribe((notes) => this.notes.set(notes));
   }
 

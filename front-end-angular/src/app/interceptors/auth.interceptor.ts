@@ -2,12 +2,11 @@ import {
   HttpErrorResponse,
   HttpRequest,
   HttpInterceptorFn,
-  HttpEvent,
   HttpHandlerFn,
 } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { catchError, switchMap, take, throwError, Observable } from 'rxjs';
+import { catchError, switchMap, throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
@@ -41,7 +40,14 @@ export const authInterceptor: HttpInterceptorFn = (
           }),
           catchError((refreshError) => {
             // If refreshing fails, log out the user
-            authService.logoutUser().pipe(take(1)).subscribe();
+            authService.logoutUser().subscribe({
+              next: (response) => {
+                console.log('Logout successful:', response);
+              },
+              error: (err) => {
+                console.error('Logout failed:', err);
+              },
+            });
             return throwError(() => refreshError);
           })
         );

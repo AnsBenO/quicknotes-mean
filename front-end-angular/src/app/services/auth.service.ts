@@ -48,7 +48,14 @@ export class AuthService {
   refreshToken(): Observable<{ authToken: string }> {
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) {
-      this.logoutUser().pipe(take(1)).subscribe();
+      this.logoutUser().subscribe({
+        next: (response) => {
+          console.log('Logout successful:', response);
+        },
+        error: (err) => {
+          console.error('Logout failed:', err);
+        },
+      });
       return throwError(() => new Error('No refresh authToken found'));
     }
 
@@ -57,6 +64,7 @@ export class AuthService {
         refreshToken: refreshToken,
       })
       .pipe(
+        take(1),
         tap((response) => {
           if (response.authToken) {
             localStorage.setItem('authToken', response.authToken);
@@ -66,7 +74,14 @@ export class AuthService {
           }
         }),
         catchError((err) => {
-          this.logoutUser().pipe(take(1)).subscribe();
+          this.logoutUser().subscribe({
+            next: (response) => {
+              console.log('Logout successful:', response);
+            },
+            error: (err) => {
+              console.error('Logout failed:', err);
+            },
+          });
           console.error(err);
           return throwError(() => err);
         })
@@ -96,7 +111,14 @@ export class AuthService {
       }
     } catch (error) {
       console.error('Failed to parse JWT:', error);
-      this.logoutUser().pipe(take(1)).subscribe();
+      this.logoutUser().subscribe({
+        next: (response) => {
+          console.log('Logout successful:', response);
+        },
+        error: (err) => {
+          console.error('Logout failed:', err);
+        },
+      });
     }
   }
 
@@ -118,6 +140,7 @@ export class AuthService {
 
   logoutUser(): Observable<LogoutResponse> {
     return this.http.post<LogoutResponse>(`${API_URL}/logout`, {}).pipe(
+      take(1),
       tap({
         next: () => {
           localStorage.removeItem('authToken');

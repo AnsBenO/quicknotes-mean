@@ -2,7 +2,6 @@ import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { take } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 
@@ -21,16 +20,13 @@ export class NavigationComponent {
   constructor(public authService: AuthService, private router: Router) {}
 
   handleLogout() {
-    this.authService
-      .logoutUser()
-      .pipe(take(1))
-      .subscribe({
-        next: () => {
-          localStorage.removeItem('authToken');
-          sessionStorage.removeItem('authToken');
-          this.router.navigate(['/login']);
-        },
-      });
+    this.authService.logoutUser().subscribe({
+      next: () => {
+        localStorage.removeItem('authToken');
+        sessionStorage.removeItem('authToken');
+        this.router.navigate(['/login']);
+      },
+    });
   }
 
   toggleNav(): void {
