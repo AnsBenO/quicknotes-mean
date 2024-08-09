@@ -1,0 +1,24 @@
+name: "quicknotes-app"
+services:
+    back-end:
+        image: ansbeno/quicknotes-back-end
+        depends_on:
+            - notesDB
+        build: ./back-end
+        environment:
+            - DB_URL=mongodb://notesDB:27017/notes_app
+        ports:
+            - 3003:3003
+    notesDB:
+        image: mongo:7.0-rc-jammy
+        ports:
+            - 30000:27017
+        volumes:
+            - v_dbnotes:/data/db
+    front-end:
+        image: ansbeno/quicknotes-front-end
+        build: ./front-end-angular
+        ports:
+            - "4200:80"
+volumes:
+    v_dbnotes:

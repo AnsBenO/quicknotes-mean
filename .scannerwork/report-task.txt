@@ -1,0 +1,6 @@
+projectKey=mean_stack_demo
+serverUrl=http://localhost:9000
+serverVersion=10.6.0.92116
+dashboardUrl=http://localhost:9000/dashboard?id=mean_stack_demo
+ceTaskId=4723cb1c-202c-41b7-922a-9eeceaaf319b
+ceTaskUrl=http://localhost:9000/api/ce/task?id=4723cb1c-202c-41b7-922a-9eeceaaf319b
