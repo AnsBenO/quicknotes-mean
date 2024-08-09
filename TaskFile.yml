@@ -1,0 +1,26 @@
+version: "3"
+
+vars:
+    SLEEP_CMD: '{{if eq .GOOS "windows"}}timeout{{else}}sleep{{end}}'
+
+tasks:
+    start:
+        cmds:
+            - "docker compose up -d"
+
+    stop:
+        cmds:
+            - "docker compose stop"
+            - "docker compose rm -f"
+
+    restart:
+        cmds:
+            - task: stop
+            - task: sleep
+            - task: start
+
+    sleep:
+        vars:
+            DURATION: "{{default 5 .DURATION}}"
+        cmds:
+            - "{{.SLEEP_CMD}} {{.DURATION}}"
