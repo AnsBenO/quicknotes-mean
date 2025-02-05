@@ -18,7 +18,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AuthService } from '../../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ErrorResponse } from '../../../types/errorResponse';
 
 @Component({
   selector: 'app-login',
@@ -41,10 +40,10 @@ export class LoginComponent {
   userIcon = faUser;
 
   constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-    private destroyRef: DestroyRef
+    private readonly fb: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly router: Router,
+    private readonly destroyRef: DestroyRef
   ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
@@ -62,8 +61,8 @@ export class LoginComponent {
           next: () => {
             this.router.navigate(['/notes']);
           },
-          error: (response) => {
-            this.errorMessage.set((response.error as ErrorResponse).error);
+          error: () => {
+            this.errorMessage.set('Invalid credentials');
           },
         });
     }

@@ -25,7 +25,7 @@ export const authInterceptor: HttpInterceptorFn = (
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
-      if (err.status === 401) {
+      if (err.status === 401 && !req.url.includes('/login')) {
         // Attempt to refresh the token
         return authService.refreshToken().pipe(
           switchMap((response) => {
